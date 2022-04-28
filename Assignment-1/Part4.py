@@ -20,11 +20,11 @@ class LinkedList:
     
     def push(self, node):
         ''' Adds a node to the end of the list. '''
-        if self.head == None: 
+        if self.head is None: 
             self.head = node
         else: 
             currentNode = self.head
-            while (currentNode.next != None):
+            while (currentNode.next is not None):
                 currentNode = currentNode.next
             currentNode.next = node
         
@@ -32,11 +32,11 @@ class LinkedList:
     
     def pop(self): 
         ''' Removes and returns the value of the last node of the list. '''
-        if self.head == None:
+        if self.head is None:
             return None
         else:
             currentNode = self.head
-            while (currentNode.next.next != None):
+            while (currentNode.next.next is not None):
                 currentNode = currentNode.next 
             removedVal = currentNode.next.val # save the value of the last node
             currentNode.next = None # remove the last node
@@ -83,7 +83,7 @@ class LinkedList:
             # special case: remove node from end of text
             elif (index == self.numElements):
                 currentNode = self.head
-                while (currentNode.next.next != None):
+                while (currentNode.next.next is not None):
                     currentNode = currentNode.next 
                 currentNode.next = None # remove the last node
                 
@@ -123,14 +123,14 @@ class LinkedList:
 
     def printList(self):
         ''' Returns a string representation of the linked list. '''
-        if self.head == None: 
+        if self.head is None: 
             return
         else: 
             result = ""
             currentNode = self.head
             while (True):
                 result += (str(currentNode.val) + ' -> ')
-                if (currentNode.next != None):
+                if (currentNode.next is not None):
                     currentNode = currentNode.next
                 else: 
                     break
@@ -139,14 +139,14 @@ class LinkedList:
 
     def hasCycle(self):  
         ''' Returns a boolean denoting whether a cycle exists in the list. '''
-        if self.head == None: 
+        if self.head is None: 
             return False # assumption
         else: 
             nodes = set() # set of nodes in list (every node will be added)
             currentNode = self.head
             nodes.add(currentNode)
 
-            while (currentNode.next != None):
+            while (currentNode.next is not None):
                 currentNode = currentNode.next
 
                 # we have found a cycle if the node is already in the set
@@ -161,7 +161,9 @@ class LinkedList:
 
 
 # ----- TESTS -----
-# Repeatedly tests size() and printList()
+# Tests for push, pop, insert, remove, elementAt
+# These inherently tests size and printList
+# hasCycle is tested in maij
 
 def testPushBackAddsNode(list, node):
     ''' Tests whether a node can be pushed to the end of the list. '''
@@ -205,7 +207,7 @@ if __name__ == "__main__":
 
     print("\ntest insert and remove with valid indices")
     testInsert(list, 1, Node(4)) # 1 -> 4 -> 2 (size 3)
-    testRemove(list, 1) # 1 -> 2 (size 3)
+    testRemove(list, 1) # 1 -> 2 (size 2)
 
     print("\ntest insert and remove with invalid indices")
     # should do nothing and also return no errors
@@ -217,15 +219,15 @@ if __name__ == "__main__":
     print("\ntest element indexing")
     testElementAt(list, 0) # 1
     testElementAt(list, 1) # 2
-    testElementAt(list, -1) # invalid index
-    testElementAt(list, 2) # invalid index
+    testElementAt(list, -1) # invalid index, returns None
+    testElementAt(list, 2) # invalid index, returns None
 
     print("\ntest hasCycle")
-    # no cycle
+    # no cycle (False)
     list.printList()
     print(list.hasCycle())
 
-    # insert a cycle
+    # insert a cycle (True)
     list.head.next.next = list.head
     # list.printList()
     print(list.hasCycle())
