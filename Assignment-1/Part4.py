@@ -162,8 +162,8 @@ class LinkedList:
 
 # ----- TESTS -----
 # Tests for push, pop, insert, remove, elementAt
-# These inherently tests size and printList
-# hasCycle is tested in maij
+# These inherently test size and printList
+# hasCycle is tested in main
 
 def testPushBackAddsNode(list, node):
     ''' Tests whether a node can be pushed to the end of the list. '''

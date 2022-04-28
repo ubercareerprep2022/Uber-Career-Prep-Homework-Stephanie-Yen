@@ -79,6 +79,9 @@ def reverseHelper(list, head):
     # return the new head pointer
     return rest
 
+
+# ----- TESTS -----
+
 if __name__ == "__main__": 
     print("\nreversed list using iterative method")
     list1 = LinkedList()
