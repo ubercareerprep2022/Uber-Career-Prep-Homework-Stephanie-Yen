@@ -11,13 +11,12 @@
 class Node: 
     def __init__(self, val, next): 
         self.val = val
-        self.next = next
+        self.next = next # can also be initialized later if this is default None
 class Stack: 
 
     def __init__(self, head=None, numElements=0, minElement=None):
         self.head = head # acts as top of stack
         self.numElements = numElements
-        self.minElement = minElement
     
     def push(self, newVal):
         ''' Pushes an integer on top of the stack. '''
@@ -25,12 +24,10 @@ class Stack:
         newHead = Node(newVal, self.head)
         self.head = newHead
 
-        # # Update minimum element if necesary
-        # if self.numElements == 0: # stack is empty
-        #     self.minElement = self.head
-        # else: # stack is not empty
-        #     if newVal < self.minElement.val: 
-        #         self.minElement = self.head
+        # ALTERNATIVE
+        # newHead = Node(newVal)
+        # newHead.next = self.head
+        # self.head = newHead
 
         # Increment the size of the stack
         self.numElements += 1
@@ -44,9 +41,6 @@ class Stack:
         # Remove the node at the beginning of the linked list
         oldHead = self.head
         self.head = oldHead.next # reset the head
-
-        # Update minimum element if necessary
-        # if oldHeadVal
 
         # Decrement the size of the stack
         self.numElements -= 1
@@ -63,16 +57,33 @@ class Stack:
 
     def isEmpty(self):
         ''' Returns True or False if the stack is empty or not empty, respectively. '''
-        if (self.numElements == 0): return True
-        else:                       return False
+        return self.numElements == 0
 
     def size(self):
         ''' Returns an integer value with the count of elements in the stack. '''
         return self.numElements
+
+class MinStack: 
+
+    # Initialize two stacks
+    def __init__(self):
+        self.stack = Stack() # keep track of real elements
+        self.minStack = Stack() # keep track of current min value
+
+    def push(self, newVal: int) -> None:
+        self.stack.push(newVal)
+        if not self.minStack.head or newVal <= self.minStack.top():
+            self.minStack.push(newVal)
+
+    def pop(self) -> None:
+        # None conditions covered by Stack class
+        oldVal = self.stack.pop() 
+        if oldVal == self.minStack.top():
+            self.minStack.pop()
     
-    # def min(): 
-        ''' Returns the minimum element (node) of the stack in O(1) time. '''
-        # return self.minElement
+    def min(self) -> int:
+        ''' Returns the minimum element of the stack in O(1) time. '''
+        return self.minStack.top()
 
 class Queue: 
 
@@ -140,6 +151,7 @@ class Queue:
 if __name__ == "__main__": 
     print("--- TESTING STACK ---")
     myStack = Stack()
+    print("Top of stack: " + str(myStack.top())) # None
     myStack.push(42)
     print("Top of stack: " + str(myStack.top())) # 42
     print("Size of stack: " + str(myStack.size())) # 1
@@ -148,6 +160,20 @@ if __name__ == "__main__":
     print("Cannot peek if the stack is empty: " + str(myStack.top())) # None
     print("Size of stack: " + str(myStack.size())) # 0
 
+    print("--- TESTING MIN STACK ---")
+    myMinStack = MinStack() 
+    myMinStack.push(2)
+    myMinStack.push(3)
+    print("Min: " + str(myMinStack.min())) # 2
+    myMinStack.push(1)
+    myMinStack.push(4)
+    print("Min: " + str(myMinStack.min())) # 1
+    myMinStack.push(1) # duplicate
+    print("Min: " + str(myMinStack.min())) # 1
+    myMinStack.pop()
+    myMinStack.pop()
+    myMinStack.pop()
+    print("Min: " + str(myMinStack.min())) # 2
 
     print("--- TESTING QUEUE ---")
     myQueue = Queue() 
