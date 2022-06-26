@@ -87,9 +87,10 @@ class MinStack:
 
 class Queue: 
 
-    def __init__(self, head=None, tail=None, numElements=0):
-        self.head = head # acts as front of queue
-        self.tail = tail # acts as rear of queue
+    def __init__(self, numElements=0):
+        # UPDATE: don't actually need to initialize head/tail; if you did, should point to same node
+        # self.head = head # acts as front of queue
+        # self.tail = head # acts as rear of queue
         self.numElements = numElements
         
     def enqueue(self, newVal):

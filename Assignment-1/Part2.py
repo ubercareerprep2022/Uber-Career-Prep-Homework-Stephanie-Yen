@@ -10,6 +10,7 @@
 
 def isStringPermutation(s1, s2): 
     ''' Takes in two Strings, returns a Boolean denoting whether the first is a permutation of the second. '''
+    ''' ALTERNATE SOLUTION: Sort both strings and compare '''
     
     # Sanity checks
     if (s1 is None) or (s2 is None):
@@ -46,19 +47,15 @@ def pairsThatEqualSum(inputArray, targetSum):
         Returns: 
             (list): Array of pairs that sum to targetSum 
     ''' 
-    targetDict = {} 
+    numSet = set()
     pairs = [] 
 
-    # Iterate over inputArray to map each value to its addend (to get targetSum)
     for i in range(len(inputArray)): 
-        targetDict[inputArray[i]] = targetSum - inputArray[i]
+        numSet.add(inputArray[i]) # store each number
 
-    # Iterate over inputArray to find each possible pair
-    for i in range(len(inputArray)): 
-        targetNumber = targetDict.get(inputArray[i])
-        if targetNumber in inputArray:
-            if (targetNumber, inputArray[i]) not in pairs: # avoid duplicates (order does not matter)
-                pairs.append((inputArray[i], targetNumber))
+        targetNumber = targetSum - inputArray[i] # search for corresponding number
+        if targetNumber in numSet:
+            pairs.append((inputArray[i], targetNumber)) # pair found
     
     return pairs
 
