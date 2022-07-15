@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*- 
 #----------------------------------------------------------------------------
 # Created By  : Stephanie Yen
-# Created Date: May 2022
-# version ='1.0'
+# Created Date: June 2022
 # ---------------------------------------------------------------------------
 """ GRAPHS
     Functions that perform operations on graph data structures, and respective tests """  
@@ -11,66 +10,115 @@
 from typing import List, Dict
 
 ### EXERCISE 1 ###
-# prevent KeyErrors by ensuring that key args exist in the graph
+# prevent KeyErrors by checking that nodes (associated with key args) exist in the graph
 # if they don't, nothing should happen
 
 # Implementation of (undirected) graph using adjacency list
 class GraphNode:
-    def __init__(self, data):
+    def __init__(self, data: int):
         self.data = data 
 
 class GraphWithAdjacencyList:
-    def __init__(self, adjNodes={}):
-        self.adjNodes = adjNodes # Dict[GraphNode, List[GraphNode]]
+    def __init__(self):
+        self.adjList = {}       # Dict[GraphNode, List[GraphNode]]
+        self.keyNodeDict = {}   # Dict[int, GraphNode] - used to remove nodes by key
     
     def addNode(self, key: int):
         ''' Adds a new node to the graph. '''
-        if key not in self.adjNodes:
-            self.adjNodes.update({key: []}) # mapped to empty list for now
+        if key not in self.keyNodeDict: 
+            newNode = GraphNode(key)
+            self.adjList.update({newNode: []}) # mapped to empty list for now
+            self.keyNodeDict[key] = newNode
 
     def removeNode(self, key: int): 
         ''' Removes the node from the graph. '''
-        # check that the node (key) exists
-        if key in self.adjNodes:
-            del self.adjNodes[key]
+        if key in self.keyNodeDict and self.keyNodeDict[key] in self.adjList:
+            del self.adjList[self.keyNodeDict[key]]
+            del self.keyNodeDict[key]      
     
-    def addEdge(self, node1: int, node2: int):
-        ''' Adds an edge between node1 and node2. '''
-        # check that both nodes (keys) exist
-        if node1 in self.adjNodes and node2 in self.adjNodes:
+    def addEdge(self, key1: int, key2: int):
+        ''' Adds an edge between the nodes associated with key1 and key2. '''
+        if key1 in self.keyNodeDict and key2 in self.keyNodeDict:
+            node1 = self.keyNodeDict[key1]
+            node2 = self.keyNodeDict[key2]
             # prevent duplicates
-            if node2 not in self.adjNodes[node1]: 
-                self.adjNodes[node1].append(node2)
-                self.adjNodes[node2].append(node1)
+            if node1 not in self.adjList[node2]: 
+                self.adjList[node1].append(node2)
+                self.adjList[node2].append(node1)
     
-    def removeEdge(self, node1: int, node2: int):
+    def removeEdge(self, key1: int, key2: int):
         ''' Removes an edge between node1 and node2. '''
-        # check that both nodes (keys) exist
-        if node1 in self.adjNodes and node2 in self.adjNodes:
+        if key1 in self.keyNodeDict and key2 in self.keyNodeDict:
+            node1 = self.keyNodeDict[key1]
+            node2 = self.keyNodeDict[key2]
             # check that the edge exists
-            if node2 in self.adjNodes[node1] and node1 in self.adjNodes[node2]:
-                self.adjNodes[node1].remove(node2)
-                self.adjNodes[node2].remove(node1)
+            if node2 in self.adjList[node1] and node1 in self.adjList[node2]:
+                self.adjList[node1].remove(node2)
+                self.adjList[node2].remove(node1)
     
     def getAdjNodes(self, key: int) -> List[GraphNode]: 
         ''' Get nodes that are connected to the node represented by 'key'. '''
-        # check that the node(key) exists
-        if key in self.adjNodes:
-            return self.adjNodes[key]
+        # check that the node (key) exists
+        if key in self.keyNodeDict:
+            return self.adjList[self.keyNodeDict[key]]
         
-    # EXTRA
+    # EXTRA UTILITY METHODS
     def printNodes(self):
-        ''' Utility print method for the nodes in the graph. '''
-        print(self.adjNodes)
+        for node in self.adjList:
+            print(str(node.data))
+
+    def printAdjNodes(self):
+        for node in self.adjList:
+            print("edges of " + str(node.data))
+            for adjNode in self.adjList[node]:
+                print(str(node.data) + "->" + str(adjNode.data))
+            print("\n")
     
     ### EXERCISE 2-3 ###
     # traversals are for directed graphs
 
-    def DFS(self, key: int):
+    def dfs(self, key: int):
         ''' Traverse graph via DFS starting from 'key'. Print each node along the way. '''
+        if key not in self.keyNodeDict:
+            return 
+        
+        visited = set() # global variable
+        dfsHelper(self.keyNodeDict(key))
 
-    def BFS(self, key: int):
+        def dfsHelper(currNode, visited):
+            # base case -- node has already been visited
+            if currNode in visited:
+                return
+            
+            # mark as visited  
+            print(currNode.data)
+            visited.add(currNode)
+
+            # explore all neighbors
+            for adjNode in self.adjList(currNode):
+                dfsHelper(adjNode, visited)
+
+    def bfs(self, key: int):
         ''' Traverse graph via BFS starting from 'key'. Print each node along the way. '''
+        if key not in self.keyNodeDict:
+            return
+
+        q = []
+        visited = set()
+
+        q.append(self.keyNodeDict[key])
+        while q:
+            prevNode = q.pop(0)
+
+            if prevNode not in visited:
+                # mark as visited
+                print(prevNode.data)
+                visited.add(prevNode)
+
+                # explore all neighbors
+                for adjNode in self.adjList[prevNode]:
+                    if adjNode not in visited:
+                        q.append(adjNode)
 
 
 # ----- TESTS -----
@@ -99,7 +147,7 @@ def undirectedGraph():
     g.removeNode(5) 
     g.removeNode(8) # remove a node that does not exist
     g.printNodes()
-    # {1: [], 2: [], 3: [], 4: []}
+    # # {1: [], 2: [], 3: [], 4: []}
 
     print("--- Adding edges ---")
     g.addEdge(1, 2)
@@ -109,12 +157,12 @@ def undirectedGraph():
     g.addEdge(2, 3)
     g.addEdge(1, 8) # add an edge where one node does not exist
     g.addEdge(8, 9) # add an edge where neither node exists
-    g.printNodes()
+    g.printAdjNodes()
     # {1: [2, 4], 2: [1, 3], 3: [2], 4: [1]}
 
+    # TODO
     # how are loops handled?
     # g.addEdge(3, 3)
-    # {1: [2, 4], 2: [1, 3], 3: [3, 3, 2], 4: [1]}
     
     print("--- Removing edges ---")
     g.removeEdge(3, 2) # remove edge order should not matter
@@ -122,8 +170,8 @@ def undirectedGraph():
     g.removeEdge(2, 3) # remove an edge that has already been removed (flipped order) 
     g.removeEdge(1, 8) # remove an edge where one node does not exist
     g.removeEdge(8, 9) # remove an edge where neither node exists
-    g.printNodes()
-    # {1: [2, 4], 2: [1], 3: [], 4: [1]}
+    g.printAdjNodes()
+    # # {1: [2, 4], 2: [1], 3: [], 4: [1]}
 
     print("--- Printing adjacent nodes ---")
     print(g.getAdjNodes(1)) # [2, 4]
@@ -131,21 +179,22 @@ def undirectedGraph():
     print(g.getAdjNodes(4)) # [1]
     print(g.getAdjNodes(8)) # None (node does not exist)
 
-def directedGraphDFS(): 
-    dfsGraph = GraphWithAdjacencyList()
-    dfsGraph.addNode(0)
-    dfsGraph.addNode(1)
-    dfsGraph.addNode(2)
-    dfsGraph.addNode(3)
+def dfsBfsGraphs(): 
+    graph = GraphWithAdjacencyList()
+    graph.addNode(0)
+    graph.addNode(1)
+    graph.addNode(2)
+    graph.addNode(3)
 
-    # add outgoing edges
-    dfsGraph.addEdge(0, 1)
-    dfsGraph.addEdge(0, 2)
+    graph.addEdge(0, 1)
+    graph.addEdge(1, 2)
+    graph.addEdge(2, 3)
+
+    graph.printAdjNodes()
     
-    dfsGraph.printNodes()
-
-    # does edge order matter? e.g. 0 -> 2, 1
+    # graph.dfs(0)
+    graph.bfs(0)
 
 if __name__ == "__main__": 
-    # undirectedGraph() # Exercise 1
-    directedGraphDFS()
+    # undirectedGraph()   # Exercise 1
+    dfsBfsGraphs()      # Exercise 2 -- UnboundLocalError, Exercise 3

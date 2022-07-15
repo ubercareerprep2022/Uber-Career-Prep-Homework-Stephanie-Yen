@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*- 
 #----------------------------------------------------------------------------
 # Created By  : Stephanie Yen
-# Created Date: May 2022
-# version ='1.0'
+# Created Date: June 2022
 # ---------------------------------------------------------------------------
 """ TREES
     Functions that perform operations on tree data structures, and respective tests """  
